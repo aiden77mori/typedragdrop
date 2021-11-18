@@ -1,0 +1,46 @@
+
+<div style="display: flex; flex-direction: row; justify-content: space-around;"> 
+  <button (click)="undo()" [disabled]="disableUndo">
+    Undo
+  </button>
+  <button (click)="redo()" [disabled]="disableRedo">
+    Redo
+  </button>
+</div>
+
+<ng-template #tmplNode let-node="node">
+  <div class="node-item" [attr.data-id]="node.id" [attr.id]="'node-'+node.id">
+    
+    <div class="node-title">
+      - {{node.name}} <span class="item-notes"></span>
+    </div>
+
+    <div class="node-children"
+         cdkDropList [cdkDropListData]="node.subordinates"
+         [id]="node.id" [cdkDropListConnectedTo]="dropTargetIds"
+         (cdkDropListDropped)="move($event)"
+         [cdkDropListSortingDisabled]="true">
+
+      <div *ngFor="let child of node.subordinates" cdkDrag [cdkDragData]="child.id" 
+           (cdkDragMoved)="drag($event)">
+        <ng-container *ngTemplateOutlet="tmplNode,context:{node:child}"></ng-container>  
+      </div>
+
+    </div>
+
+  </div>
+</ng-template>
+
+<div cdkDropList [cdkDropListData]="nodes"
+     [id]="'main'" [cdkDropListConnectedTo]="dropTargetIds"
+     (cdkDropListDropped)="move($event)"
+     [cdkDropListSortingDisabled]="true">
+     
+  <div *ngFor="let node of nodes" cdkDrag [cdkDragData]="node.id"      
+     (cdkDragMoved)="drag($event)">
+
+    <ng-container *ngTemplateOutlet="tmplNode,context:{node:node}"></ng-container>
+
+  </div>
+</div>
+
